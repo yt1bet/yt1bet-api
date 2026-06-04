@@ -1,13 +1,14 @@
 const express = require('express');
 const cors = require('cors');
 const { exec } = require('child_process');
+
 const app = express();
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 
 function run(cmd) {
   return new Promise((resolve, reject) => {
-    exec(cmd, { timeout: 60000 }, (err, stdout, stderr) => {
+    exec(cmd, { timeout: 60000, maxBuffer: 1024 * 1024 * 10 }, (err, stdout, stderr) => {
       if (err) return reject(stderr || err.message);
       resolve(stdout.trim());
     });
@@ -44,7 +45,7 @@ app.post('/download', async (req, res) => {
     if (!downloadUrl) return res.status(400).json({ error: 'No URL found' });
     res.json({ downloadUrl });
   } catch (e) {
-    res.status(500).json({ error: 'Download failed' });
+    res.status(500).json({ error: e.toString() });
   }
 });
 
