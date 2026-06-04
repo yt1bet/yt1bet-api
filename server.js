@@ -1,8 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const { exec } = require('child_process');
-const https = require('https');
-const http = require('http');
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -42,22 +40,9 @@ app.post('/download', async (req, res) => {
       fmt = `best[height<=${q}][ext=mp4]/best[height<=${q}]/best`;
     }
     const out = await run(`yt-dlp --get-url --format "${fmt}" --no-playlist --no-warnings "${url}"`);
-    const dlUrl = out.split('\n').filter(Boolean)[0];
-    if (!dlUrl) return res.status(400).json({ error: 'No URL found' });
-
-    const ext = type === 'mp3' ? 'mp3' : 'mp4';
-    const mime = type === 'mp3' ? 'audio/mpeg' : 'video/mp4';
-    res.setHeader('Content-Disposition', `attachment; filename="yt1bet.${ext}"`);
-    res.setHeader('Content-Type', mime);
-    res.setHeader('Access-Control-Allow-Origin', '*');
-
-    const getter = dlUrl.startsWith('https') ? https : http;
-    getter.get(dlUrl, (stream) => {
-      if (stream.headers['content-length']) {
-        res.setHeader('Content-Length', stream.headers['content-length']);
-      }
-      stream.pipe(res);
-    }).on('error', () => res.status(500).end());
+    const downloadUrl = out.split('\n').filter(Boolean)[0];
+    if (!downloadUrl) return res.status(400).json({ error: 'No URL found' });
+    res.json({ downloadUrl });
   } catch (e) {
     res.status(500).json({ error: 'Download failed' });
   }
