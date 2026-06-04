@@ -1,6 +1,7 @@
 [build]
-builder = "nixpacks"
+builder = "NIXPACKS"
+buildCommand = "pip install yt-dlp && npm install"
 
 [deploy]
-startCommand = "npm start"
-restartPolicyType = "on_failure"
+startCommand = "node server.js"
+restartPolicyType = "ON_FAILURE"
