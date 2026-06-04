@@ -7,7 +7,7 @@ app.use(express.json());
 
 function run(cmd) {
   return new Promise((resolve, reject) => {
-    exec(cmd, { timeout: 30000 }, (err, stdout, stderr) => {
+    exec(cmd, { timeout: 60000 }, (err, stdout, stderr) => {
       if (err) return reject(stderr || err.message);
       resolve(stdout.trim());
     });
